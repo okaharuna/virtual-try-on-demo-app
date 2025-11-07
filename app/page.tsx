@@ -1,11 +1,15 @@
 "use client";
 
 import type { ImageUploadState, TryOnResponse } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageUploader from "./components/ImageUploader";
 import TryOnResult from "./components/TryOnResult";
 
+const STORAGE_KEY_PERSON = "virtual-try-on-person-image";
+const STORAGE_KEY_PRODUCT = "virtual-try-on-product-image";
+
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
   const [images, setImages] = useState<ImageUploadState>({
     personImage: null,
     productImage: null,
@@ -14,13 +18,35 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<string[]>([]);
 
+  // クライアント側でマウントされたことを検知
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // マウント後にlocalStorageから画像を読み込む
+  useEffect(() => {
+    if (!mounted) return;
+
+    const savedPersonImage = localStorage.getItem(STORAGE_KEY_PERSON);
+    const savedProductImage = localStorage.getItem(STORAGE_KEY_PRODUCT);
+
+    if (savedPersonImage || savedProductImage) {
+      setImages({
+        personImage: savedPersonImage,
+        productImage: savedProductImage,
+      });
+    }
+  }, [mounted]);
+
   const handlePersonImageChange = (image: string) => {
     setImages((prev) => ({ ...prev, personImage: image }));
+    localStorage.setItem(STORAGE_KEY_PERSON, image);
     setError(null);
   };
 
   const handleProductImageChange = (image: string) => {
     setImages((prev) => ({ ...prev, productImage: image }));
+    localStorage.setItem(STORAGE_KEY_PRODUCT, image);
     setError(null);
   };
 
