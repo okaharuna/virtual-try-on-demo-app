@@ -71,9 +71,11 @@ export default function ImageUploader({
               />
             </svg>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Click to upload or drag and drop
+              クリックしてアップロード
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500">PNG, JPG, JPEG up to 10MB</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              PNG、JPG、JPEG（最大10MB）
+            </p>
           </div>
         )}
         <input

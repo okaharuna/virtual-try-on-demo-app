@@ -50,9 +50,17 @@ export default function Home() {
     setError(null);
   };
 
+  const handleClearImages = () => {
+    setImages({ personImage: null, productImage: null });
+    setResults([]);
+    setError(null);
+    localStorage.removeItem(STORAGE_KEY_PERSON);
+    localStorage.removeItem(STORAGE_KEY_PRODUCT);
+  };
+
   const handleTryOn = async () => {
     if (!images.personImage || !images.productImage) {
-      setError("Please upload both person and product images");
+      setError("人物の写真と服の画像の両方をアップロードしてください");
       return;
     }
 
@@ -77,7 +85,7 @@ export default function Home() {
       const data: TryOnResponse = await response.json();
 
       if (!data.success) {
-        setError(data.error || "Failed to generate try-on images");
+        setError(data.error || "試着画像の生成に失敗しました");
         return;
       }
 
@@ -85,7 +93,7 @@ export default function Home() {
         setResults(data.images);
       }
     } catch (err) {
-      setError("An error occurred while processing your request");
+      setError("リクエストの処理中にエラーが発生しました");
       console.error(err);
     } finally {
       setLoading(false);
@@ -107,14 +115,27 @@ export default function Home() {
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">画像のアップロード</h2>
+            {(images.personImage || images.productImage) && (
+              <button
+                onClick={handleClearImages}
+                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                type="button"
+              >
+                画像をクリア
+              </button>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <ImageUploader
-              label="Your Photo"
+              label="あなたの写真"
               imageSrc={images.personImage}
               onImageChange={handlePersonImageChange}
             />
             <ImageUploader
-              label="Clothing Item"
+              label="服の画像"
               imageSrc={images.productImage}
               onImageChange={handleProductImageChange}
             />
@@ -158,10 +179,10 @@ export default function Home() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Generating...
+                  生成中...
                 </span>
               ) : (
-                "Try It On"
+                "試着する"
               )}
             </button>
           </div>
@@ -170,7 +191,7 @@ export default function Home() {
         {results.length > 0 && <TryOnResult images={results} />}
 
         <div className="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>Powered by Google Cloud Vertex AI Virtual Try-On API</p>
+          <p>Google Cloud Vertex AI Virtual Try-On APIを使用</p>
         </div>
       </div>
     </main>
