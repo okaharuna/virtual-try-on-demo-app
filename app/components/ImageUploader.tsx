@@ -73,9 +73,7 @@ export default function ImageUploader({
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               クリックしてアップロード
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500">
-              PNG、JPG、JPEG（最大10MB）
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">PNG、JPG、JPEG（最大10MB）</p>
           </div>
         )}
         <input

@@ -2,7 +2,9 @@
 
 import type { ImageUploadState, TryOnResponse } from "@/types";
 import { useEffect, useState } from "react";
+import ClothesGallery from "./components/ClothesGallery";
 import ImageUploader from "./components/ImageUploader";
+import PersonGallery from "./components/PersonGallery";
 import TryOnResult from "./components/TryOnResult";
 
 const STORAGE_KEY_PERSON = "virtual-try-on-person-image";
@@ -48,6 +50,40 @@ export default function Home() {
     setImages((prev) => ({ ...prev, productImage: image }));
     localStorage.setItem(STORAGE_KEY_PRODUCT, image);
     setError(null);
+  };
+
+  const handleSelectPerson = async (imageUrl: string) => {
+    try {
+      // 画像をfetchしてBase64に変換
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        handlePersonImageChange(base64);
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error("画像の読み込みに失敗しました:", error);
+      setError("サンプル画像の読み込みに失敗しました");
+    }
+  };
+
+  const handleSelectClothes = async (imageUrl: string) => {
+    try {
+      // 画像をfetchしてBase64に変換
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        handleProductImageChange(base64);
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error("画像の読み込みに失敗しました:", error);
+      setError("プリセット画像の読み込みに失敗しました");
+    }
   };
 
   const handleClearImages = () => {
@@ -116,7 +152,9 @@ export default function Home() {
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">画像のアップロード</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              画像のアップロード
+            </h2>
             {(images.personImage || images.productImage) && (
               <button
                 onClick={handleClearImages}
@@ -129,16 +167,28 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <ImageUploader
-              label="あなたの写真"
-              imageSrc={images.personImage}
-              onImageChange={handlePersonImageChange}
-            />
-            <ImageUploader
-              label="服の画像"
-              imageSrc={images.productImage}
-              onImageChange={handleProductImageChange}
-            />
+            <div>
+              <ImageUploader
+                label="全身写真"
+                imageSrc={images.personImage}
+                onImageChange={handlePersonImageChange}
+              />
+              <PersonGallery
+                onSelectPerson={handleSelectPerson}
+                selectedImage={images.personImage}
+              />
+            </div>
+            <div>
+              <ImageUploader
+                label="服の画像"
+                imageSrc={images.productImage}
+                onImageChange={handleProductImageChange}
+              />
+              <ClothesGallery
+                onSelectClothes={handleSelectClothes}
+                selectedImage={images.productImage}
+              />
+            </div>
           </div>
 
           {error && (
