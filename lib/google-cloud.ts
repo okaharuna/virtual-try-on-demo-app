@@ -1,4 +1,5 @@
 import type { TryOnRequest, TryOnResponse } from "@/types";
+import { getGoogleAuth } from "./google-auth";
 
 const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT;
 const LOCATION = process.env.GOOGLE_CLOUD_LOCATION || "us-central1";
@@ -8,11 +9,7 @@ const LOCATION = process.env.GOOGLE_CLOUD_LOCATION || "us-central1";
  */
 async function getAccessToken(): Promise<string> {
   try {
-    const { GoogleAuth } = await import("google-auth-library");
-    const auth = new GoogleAuth({
-      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-    });
-
+    const auth = await getGoogleAuth();
     const client = await auth.getClient();
     const token = await client.getAccessToken();
 
