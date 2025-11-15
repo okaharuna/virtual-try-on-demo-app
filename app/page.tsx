@@ -172,6 +172,7 @@ export default function Home() {
                 label="全身写真"
                 imageSrc={images.personImage}
                 onImageChange={handlePersonImageChange}
+                enableCamera={true}
               />
               <PersonGallery
                 onSelectPerson={handleSelectPerson}
